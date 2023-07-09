@@ -5,6 +5,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from parsel import Selector
+from html.parser import HTMLParser
 from bs4 import BeautifulSoup
 import time
 import random
@@ -19,6 +20,7 @@ class WebDriver:
         self.driver = webdriver.Chrome(options=chrome_options)
         self.action = webdriver.ActionChains(self.driver)
         page_content = self.driver.page_source
+        self.parser = HTMLParser()
         response = Selector(page_content)
 
     def implicitly_wait(self, time:int):
@@ -26,6 +28,7 @@ class WebDriver:
 
     def get_url(self, web_source:str):
         self.driver.get(web_source)
+        self.driver.implicitly_wait(20)
 
     def search_restaurant(self, restaurant_name:str):
         query = self.driver.find_element(By.CLASS_NAME, 'gLFyf')
@@ -75,7 +78,7 @@ class WebDriver:
                     print((timestamp))
                     review_dict[user.text] = (rating, timestamp, reviews[2*i])
             
-            exit()
+            # exit()
 
             for i in range(100):
                 self.action.key_down(Keys.ARROW_DOWN).perform()
@@ -102,11 +105,26 @@ class WebDriver:
         time.sleep(1)
 
         return self.scroll_reviews()
+    
+    def inline_exits(self):
+        outers = self.driver.find_elements(By.CLASS_NAME, 'JV5xkf')
+        
+        for outer in outers:
+            for inner in outer.find_elements(By.CLASS_NAME, 'xFAlBc'):
+                if 'inline' in inner.get_attribute('innerHTML'):
+                    return True
+                
+        return False
+
+                
 
 web_source = 'https://www.google.com/search?tbs=lf:1,lf_ui:9&tbm=lcl&q=%E9%A6%AC%E7%A5%96%E9%BA%B5%E9%A4%A8&rflfq=1&num=10&rldimm=5238133383601099463&ved=2ahUKEwiq5b7FsuL_AhVggVYBHQ8dDD8Qu9QIegQIFRAK#rlfi=hd:;si:;mv:[[25.1223384,121.56062569999999],[25.0037056,121.45101059999999]]'
+web_source = 'https://www.google.com/search?q=momo&tbm=lcl&ei=GVeqZPOVAvbP2roPxv2ykAo&ved=0ahUKEwizhof8goGAAxX2p1YBHca-DKIQ4dUDCAk&uact=5&oq=momo&gs_lcp=Cg1nd3Mtd2l6LWxvY2FsEAMyBwgAEIoFEEMyCwgAEIAEELEDEIMBMgcIABCKBRBDMgsIABCABBCxAxCDATILCAAQgAQQsQMQgwEyCwgAEIAEELEDEIMBMggIABCABBCxAzIFCAAQgAQyCwgAEIoFELEDEIMBMgsIABCABBCxAxCDAVAAWMEeYK0laAFwAHgAgAEuiAHmAZIBATaYAQCgAQGwAQDAAQE&sclient=gws-wiz-local#rlfi=hd:;si:13015144036072985373,l,CgRtb21vSKf0s5T7qoCACFoIEAAiBG1vbW-SASNzaGFidV9zaGFidV9hbmRfc3VraXlha2lfcmVzdGF1cmFudKoBNxABKggiBG1vbW8oRTIfEAEiGyfn7m9C-Z2GUZQm_CyLbFZ-27aSjNvYMN3iujIIEAIiBG1vbW8;mv:[[25.087027000000003,121.61229180000001],[24.9658601,121.46718109999999]]'
+web_source = 'https://www.google.com/search?q=%E7%84%A1%E8%80%81%E9%83%AD&tbm=lcl&ei=GVeqZPOVAvbP2roPxv2ykAo&ved=0ahUKEwizhof8goGAAxX2p1YBHca-DKIQ4dUDCAk&uact=5&oq=%E7%84%A1%E8%80%81%E9%83%AD&gs_lcp=Cg1nd3Mtd2l6LWxvY2FsEAMyDQgAEIAEELEDEIMBEAoyCwgAEIoFELEDEIMBMgcIABCABBAKMgcIABCABBAKMgcIABCABBAKMgcIABCABBAKMgcIABCABBAKMgcIABCABBAKMgcIABCABBAKMgcIABCABBAKOggIABCABBCxAzoFCAAQgAQ6CwgAEIAEELEDEIMBOgUIABCiBFAAWNwRYO4SaANwAHgAgAEviAGGA5IBAjEwmAEAoAEBsAEAwAEB&sclient=gws-wiz-local#rlfi=hd:;si:5322316505095930375,l,CgnnhKHogIHpjYsiA4gBAUjh_cf2m6qAgAhaHRAAEAEQAhgAGAEYAiIL54ShIOiAgSDpjYsqAggCkgESaG90X3BvdF9yZXN0YXVyYW50qgFEEAEqDyIL54ShIOiAgSDpjYsoRTIeEAEiGrZ2aAr9G-ive49dRvAgLzkdAOCb_ygVo1boMg8QAiIL54ShIOiAgSDpjYs;mv:[[25.0551033,121.5231801],[25.042005699999997,121.50813249999999]]'
 driver = WebDriver()
 driver.get_url(web_source)
-driver.implicitly_wait(20)
-driver.search_restaurant('肯德基')
-driver.implicitly_wait(20)
-driver.get_reviews()
+print(driver.inline_exits())
+# driver.implicitly_wait(20)
+# driver.search_restaurant('肯德基')
+# driver.implicitly_wait(20)
+# driver.get_reviews()
