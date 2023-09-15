@@ -11,16 +11,25 @@ import time
 import random
 from collections import defaultdict
 from tqdm import tqdm
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 
 
-class WebDriver:
-
+class WebDriver():
     def __init__(self):
+        # 配置代理
         chrome_options = Options()
+        chrome_options.add_argument("--headless")
         chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
         chrome_options.add_experimental_option("detach", True)
+        # chrome_options.add_argument("--proxy-server=http://35.240.219.50:8080")
+        # chrome_options.add_argument("start-maximized")
 
-        self.driver = webdriver.Chrome(options=chrome_options)
+        self.driver = webdriver.Chrome(
+            # service=Service(ChromeDriverManager().install()),
+            options=chrome_options,
+        )
         self.action = webdriver.ActionChains(self.driver)
         page_content = self.driver.page_source
         self.parser = HTMLParser()
@@ -28,6 +37,9 @@ class WebDriver:
 
     def implicitly_wait(self, time:int):
         self.driver.implicitly_wait(time)
+
+    def quit(self):
+        self.driver.quit()
         
     def refresh(self):
         self.driver.refresh()
