@@ -1,0 +1,5 @@
+beautifulsoup4==4.12.2
+parsel==1.8.1
+pynput==1.7.6
+selenium==4.10.0
+tqdm==4.65.0
